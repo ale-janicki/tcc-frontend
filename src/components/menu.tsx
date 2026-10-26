@@ -2,12 +2,13 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { FaUser } from "react-icons/fa";
 import "@fontsource/audiowide";
 
 export default function Menu() {
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState("Username")
-  const pathname = usePathname();
+  const pathname = (usePathname() ?? "").replace(/\/$/, "");
 
   const handleClick = () => {
     setIsOpen(!isOpen);
@@ -43,8 +44,8 @@ export default function Menu() {
         } lg:w-1/3`}
       >
         <div className={`flex flex-col mx-auto mt-4 -mb-20 text-center md:mt-14 ${pathname == "/profile" ? "hidden" : ""}`}>
-          <div className="bg-darkGrey-500 rounded-full flex justify-center pt-4 w-20 h-20 m-auto md:w-40 md:h-40 md:pt-16">
-            <img src="../../public/img/userPhoto.png" alt="user photo" />
+          <div className="bg-darkGrey-500 rounded-full flex justify-center items-center w-20 h-20 m-auto md:w-40 md:h-40">
+            <FaUser className="text-primary-500 text-4xl md:text-7xl" aria-label="user photo" />
           </div>
           <div className="text-primary-500 font-audiowide text-2xl mt-5 md:text-5xl">
             <h1>{user}</h1>

@@ -7,9 +7,16 @@ import Insert from "../components/deposit/insert";
 import Thanks from "../components/deposit/thanks";
 import { useState } from "react";
 import { Private } from "@/components/private";
-import { countBattery, createDeposit, getUserInfo } from "@/services/api";
-import { setCookie } from "nookies";
+import { countBattery, createDeposit } from "@/services/api";
 import Popup from "@/components/popup";
+
+function Analyzing() {
+  return (
+    <div className="h-full w-full text-center justify-center font-audiowide text-xl text-primary-500 md:text-4xl">
+      <h1 className="my-32 animate-pulse md:my-64">Analisando…</h1>
+    </div>
+  );
+}
 
 export default function Deposit() {
   const [display, setDisplay] = useState(0);
@@ -18,6 +25,7 @@ export default function Deposit() {
   const [popupTitle, setPopupTitle] = useState("title");
   const [popupContent, setPopupContet] = useState("content");
   const [isBtnDisable, setIsBtnDisable] = useState(true);
+  const [analyzing, setAnalyzing] = useState(false);
 
   const pageDisplay = () => {
     switch (display) {
@@ -34,7 +42,7 @@ export default function Deposit() {
           />
         );
       case 2:
-        return <Insert />;
+        return analyzing ? <Analyzing /> : <Insert />;
       case 3:
         return <Thanks />;
       default:
@@ -46,7 +54,7 @@ export default function Deposit() {
     <Private>
       <main className="bg-darkGrey-500 w-screen h-screen xl:grid xl:grid-cols-3 xl:auto-cols-auto">
         <Menu />
-        <div className="flex justify-center">
+        <div className="contents">
           <Popup
             isOpen={isOpen}
             setOpen={setIsOpen}
@@ -73,16 +81,32 @@ export default function Deposit() {
                   <Button
                     color="primary"
                     onClick={() => {
-                      setDisplay(display != 3 ? display + 1 : 0);
-                      if (display == 1) {
-                        countBattery().then((ress) => {
-                          const batteries = ress.data.count;
-                          setCookie(undefined, "valid.batteries", batteries);
-                          console.log(batteries);
-                        });
-                      } else if (display == 2) {
-                        createDeposit();
+                      if (analyzing) return;
+                      if (display == 1 && !(Number.isInteger(Number(istQuantity)) && Number(istQuantity) > 0)) {
+                        setPopupTitle("Atenção!");
+                        setPopupContet("Informe a quantidade de pilhas, maior que 0.");
+                        setIsOpen(true);
+                        return;
                       }
+                      if (display == 2) {
+                        setAnalyzing(true);
+                        countBattery()
+                          .then(() => createDeposit())
+                          .then(() => {
+                            setDisplay(3);
+                          })
+                          .catch(() => {
+                            setDisplay(1);
+                            setPopupTitle("Erro");
+                            setPopupContet(
+                              "Não foi possível concluir o depósito. Tente novamente."
+                            );
+                            setIsOpen(true);
+                          })
+                          .finally(() => setAnalyzing(false));
+                        return;
+                      }
+                      setDisplay(display != 3 ? display + 1 : 0);
                     }}
                   >
                     {display != 3 ? "Continuar" : "Finalizar"}
@@ -90,6 +114,7 @@ export default function Deposit() {
                   <Button
                     color="secondary"
                     onClick={() => {
+                      if (analyzing) return;
                       setDisplay(display != 3 ? display - 1 : 1);
                     }}
                   >

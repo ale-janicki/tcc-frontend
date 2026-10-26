@@ -1,13 +1,19 @@
 import Input from "@/components/input";
-import { setCookie } from "nookies";
+import { setBatteryQuantity } from "@/services/api";
 import Popup from "../popup";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Quantity(props: any) {
   const [isOpen, setIsOpen] = useState(false);
   const [popupTitle, setPopupTitle] = useState("title");
   const [popupContent, setPopupContet] = useState("content");
   const [isBtnDisable, setIsBtnDisable] = useState(true)
+
+  const { setIstQuantity } = props;
+  useEffect(() => {
+    setBatteryQuantity(0);
+    setIstQuantity("");
+  }, [setIstQuantity]);
 
   return (
     <div>
@@ -20,17 +26,13 @@ export default function Quantity(props: any) {
           color="third"
           type="number"
           onChange={(e: any) => {
+            const insertQuantity = e.target.value;
+            setBatteryQuantity(Number(insertQuantity));
+            props.setIstQuantity(insertQuantity);
             if (e.target.value == 0) {
               setIsOpen(true);
               setPopupTitle("Atenção!");
               setPopupContet("O valor precisa ser maior que 0!");
-            } else {
-              const insertQuantity = e.target.value;
-              setCookie(
-                undefined,
-                "battery.quantity",
-                insertQuantity.toString()
-              );
             }
           }}
         />

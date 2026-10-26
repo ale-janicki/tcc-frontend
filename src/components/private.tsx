@@ -6,14 +6,9 @@ export const Private = ({ children }: any) => {
   const nav = useRouter();
 
   useEffect(() => {
-    checkToken()
-      .then((ress) => {
-        console.log(ress.data);
-      })
-      .catch((err) => {
-        console.log(err);
-        nav.push("/login");
-      });
+    checkToken().catch(() => {
+      nav.push("/login");
+    });
   }, []);
 
   return children;

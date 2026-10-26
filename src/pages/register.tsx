@@ -5,10 +5,9 @@ import Input from "@/components/input";
 import Link from "next/link";
 import CheckBox from "@/components/checkBox";
 import { useState } from "react";
-import { api, authLogin, createUser } from "@/services/api";
+import { authLogin, createUser } from "@/services/api";
 import Popup from "@/components/popup";
 import { useForm } from "react-hook-form";
-import { setCookie } from "nookies";
 import { useRouter } from "next/navigation";
 
 const passwordRegex =
@@ -21,7 +20,7 @@ export default function Register() {
   const [isOpen, setIsOpen] = useState(false);
   const [popupTitle, setPopupTitle] = useState("title");
   const [popupContent, setPopupContet] = useState("content");
-  const [token, setToken] = useState(null);
+  const [token, setToken] = useState<any>(null);
   const nav = useRouter();
 
   const { register, handleSubmit, setValue } = useForm();
@@ -40,14 +39,7 @@ export default function Register() {
           .then((ress) => {
             console.log(ress.status);
             authLogin(data.email, data.password_user).then((ress) => {
-              const token = ress.data.access_token;
-              if (token) {
-                setCookie(undefined, "nextauth.token", token, {
-                  maxAge: 10, // 10 min
-                });
-              }
-              api.defaults.headers["Authorization"] = `Bearer ${token}`;
-              setToken(token);
+              setToken(ress.data.access_token);
               nav.push("/deposit");
             });
           })
@@ -58,7 +50,7 @@ export default function Register() {
               setPopupContet("Erro de comunicação com o servidor");
               setIsOpen(true);
             }
-            if (err.response.status == 409) {
+            if (err.response?.status == 409) {
               setPopupTitle("Erro!");
               setPopupContet("O email já está sendo utilizado");
               setIsOpen(true);
@@ -177,9 +169,6 @@ export default function Register() {
               <Button type="submit" color="primary">
                 Entrar
               </Button>
-              <Link href={"/recovery"}>
-                <Button color="secondary">Esqueceu a senha ?</Button>
-              </Link>
             </div>
           </form>
         </div>

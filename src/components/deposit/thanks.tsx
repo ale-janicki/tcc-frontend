@@ -1,15 +1,17 @@
 "use client";
-import { parseCookies } from "nookies";
+import { getLastDeposit } from "@/services/api";
 import { useEffect, useState } from "react";
 
 export default function Thanks() {
   const [userPoints, setUserPoints] = useState("XXXX");
   const [depositedBatteries, setDepositedBatteries] = useState("XXXX");
+  const [returned, setReturned] = useState(0);
   useEffect(() => {
-    const { "earned.credits": earnedCredits }: any = parseCookies();
-    const { "deposited.batteries": depositedBatteries }: any = parseCookies();
-    setUserPoints(earnedCredits);
-    setDepositedBatteries(depositedBatteries)
+    const last = getLastDeposit();
+    if (!last) return;
+    setUserPoints(last.credits.toString());
+    setDepositedBatteries(last.valid.toString());
+    setReturned(last.returned);
   }, []);
 
   return (
@@ -23,6 +25,11 @@ export default function Thanks() {
         <p>Pilhas depositadas:</p>
         <p>{depositedBatteries}</p>
       </div>
+      {returned > 0 && (
+        <p className="mt-6 text-black/50 md:mt-10 md:text-2xl">
+          1 objeto não foi reconhecido como pilha e foi devolvido.
+        </p>
+      )}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { FaGift } from "react-icons/fa";
 
 export default function Item() {
 
@@ -20,8 +21,8 @@ export default function Item() {
             <p>2 pts.</p>
           </div>
         </div>
-        <div className="h-full w-full bg-primary-500 rounded-lg">
-          <img src="" alt=""/>
+        <div className="h-full w-full bg-primary-500 rounded-lg flex items-center justify-center">
+          <FaGift className="text-white text-4xl md:text-6xl" aria-hidden />
         </div>
       </div>
       <div className={`bg-primary-500 justify-between p-2 text-white font-audiowide rounded-b-lg ${showHide} md:text-xl md:p-6`}>

@@ -73,13 +73,13 @@ export default function Login() {
                 }}
               />
             </div>
+            <p className="mt-4 text-xs text-black/50 md:text-xl">
+              Demonstração: demo@totem.dev / demo123
+            </p>
             <div className="mt-12 h-10 md:mt-24 md:h-20">
               <Button type="submit" color="primary">
                 Entrar
               </Button>
-              <Link href={"/recovery"}>
-                <Button color="secondary">Esqueceu a senha ?</Button>
-              </Link>
             </div>
           </form>
         </div>
